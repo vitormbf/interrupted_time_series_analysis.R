@@ -1,0 +1,35 @@
+#### Interrupted Time Series Analysis (ITS) ####
+
+# Author: Vitor Manuel B. Ferreira
+# Description: General template for performing ITS analysis on any dataset.
+
+## DATASET STRUCTURE ##
+
+# 'time': numeric variable representing sequential time points. 
+# It could be days, months, or years. For instance, January to December would be 1 to 12.
+
+# 'treatment': binary variable indicating intervention (0 = before, 1 = after).
+
+# 'time_since': time since the intervention. Values are 0 before the intervention and increase sequentially afterward.
+# For instance, if the intervention occurred in time 5 (May), the four months before May would be = 0. 
+# And then after the intervention, June = 1, July = 2, August = 3 to December = 7.
+
+# 'response_variable': numeric variable(s) to analyze (can be multiple columns).
+
+# Final model structure would be: response_variable ~ time + treatment + time_since, data = dataset
+
+## REQUIRED PACKAGES ##
+
+library(data.table)   # Efficient data handling
+library(tidyverse)    # Data wrangling and visualization
+library(nlme)         # GLS models for autocorrelation
+library(ggplot2)      # Visualization
+library(ggpubr)       # Arranging plots
+
+## IMPORTING DATA ##
+
+# Replace with your own dataset
+# Data should be in CSV format
+setwd("C:/Users/file_with_your_dataset")
+ITS_data <- fread("dataset.csv")
+
