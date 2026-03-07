@@ -1,7 +1,8 @@
 #### Interrupted Time Series Analysis (ITS) ####
 
 # Author: Vitor Manuel B. Ferreira
-# Description: General template for performing ITS analysis on any dataset.
+# Description: General template for performing Interrupted Time Series (ITS) analysis on any dataset.
+# The methodological application of this script is described in the following article: 
 
 ## DATASET STRUCTURE ##
 
@@ -14,7 +15,7 @@
 # For instance, if the intervention occurred in time 5 (May), the four months before May would be = 0. 
 # And then after the intervention, June = 1, July = 2, August = 3 to December = 7.
 
-# 'response_variable': numeric variable(s) to analyze (can be multiple columns).
+# 'response_variable': numeric variables to analyze.
 
 # Final model structure would be: response_variable ~ time + treatment + time_since, data = dataset
 
@@ -32,4 +33,80 @@ library(ggpubr)       # Arranging plots
 # Data should be in CSV format
 setwd("C:/Users/file_with_your_dataset")
 ITS_data <- fread("dataset.csv")
+
+## RUNNING MODEL ##
+
+ITS.model = lm(response_variable ~ time + treatment + time_since, data = dataset)
+summary(ITS.model)
+
+## EXTRACTING RESIDUALS ##
+residuals_model = resid(ITS.model)
+
+## PLOTTING RESIDUALS ##
+plot(residuals_model,
+     xlab = "Time",
+     ylab = "Residuals",
+     main = "Model residuals")
+abline(h = 0)
+
+## CHECKING AUTOCORRELATION ##
+acf(residuals_model,
+    xlab = "Time lag",
+    ylab = "ACF",
+    main = "Residual autocorrelation")
+
+# If significant autocorrelation is detected (e.g., lag 1 exceeds confidence bounds),
+# a GLS model with AR(1) correlation structure may be considered.
+
+## RUNNING MODEL WITH AR(1) CORRELATION STRUCTURE ##
+
+ITS.model_gls = gls(response_variable ~ time + treatment + time_since,
+                    data = dataset,
+                    correlation = corAR1(form = ~ time),
+                    method = "REML")
+
+## COMPARING MODEL FIT ##
+
+AIC(ITS.model, ITS.model_gls) # Lower AIC indicates better model fit
+
+# If the more complex model (GLS with AR(1) correlation structure) provides a better fit,
+# we check whether the autocorrelation in the residuals was properly accounted for.
+
+## CHECKING GLS MODEL RESIDUALS ##
+
+acf(resid(ITS.model_gls),
+    main = "Residual autocorrelation after AR(1) correction")
+
+# If the autocorrelation in the residuals was not properly accounted for,
+# more complex autocorrelation structures may be tested (e.g., AR(1) vs AR(2)).
+
+## FITTING MODELS WITH DIFFERENT AUTOCORRELATION STRUCTURES ##
+
+ITS.model_ar1 <- gls(response_variable ~ time + treatment + time_since,
+                     data = dataset,
+                     correlation = corARMA(p = 1, q = 0),
+                     method = "REML")
+
+ITS.model_ar2 <- gls(response_variable ~ time + treatment + time_since,
+                     data = dataset,
+                     correlation = corARMA(p = 2, q = 0),
+                     method = "REML")
+
+## COMPARING MODEL FIT ##
+
+AIC(ITS.model_ar1, ITS.model_ar2) # Lower AIC indicates better model fit
+
+## CHECKING RESIDUAL AUTOCORRELATION FOR THE BEST MODEL ##
+
+acf(resid(ITS.model_ar1),
+    main = "Residual autocorrelation after AR(1) correction")
+
+acf(resid(ITS.model_ar2),
+    main = "Residual autocorrelation after AR(2) correction")
+
+# For a detailed interpretation of the model coefficients,
+# see the Methods section of the associated manuscript
+# where this Interrupted Time Series analysis is described.
+
+## END ##
 
