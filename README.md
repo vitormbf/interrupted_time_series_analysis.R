@@ -7,4 +7,4 @@ R script implementing Interrupted Time Series Analysis (ITSA) using segmented re
 Method applied in:
 Ferreira et al. (2026) – Damming affects the taxonomic but not the functional beta diversity of fish in a neotropical reservoir ecosystem
 
-Link: https://doi.org/xxxxx
+Link: https://doi.org/10.1007/s10750-026-06118-x
