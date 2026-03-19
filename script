@@ -2,7 +2,7 @@
 
 # Author: Vitor Manuel B. Ferreira
 # Description: General template for performing Interrupted Time Series (ITS) analysis on any dataset.
-# The methodological application of this script is described in the following article: 
+# The methodological application of this script is described in the following article: https://doi.org/10.1007/s10750-026-06118-x
 
 ## DATASET STRUCTURE ##
 
